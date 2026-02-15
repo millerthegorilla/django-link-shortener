@@ -39,13 +39,15 @@ def create(user, link):
         lifespan = p.default_lifespan if p.default_lifespan is not None else getattr(settings, 'SHORTENER_LIFESPAN', -1)
         max_uses = p.default_max_uses if p.default_max_uses is not None else getattr(settings, 'SHORTENER_MAX_USES', -1)
 
-    except UrlProfile.DoesNotExist, TypeError:
+    except (UrlProfile.DoesNotExist, TypeError) as e:
         # Use defaults from settings
-        enabled = getattr(settings, 'SHORTENER_ENABLED', True)
-        max_urls = getattr(settings, 'SHORTENER_MAX_URLS', -1)
-        max_concurrent = getattr(settings, 'SHORTENER_MAX_CONCURRENT', -1)
-        lifespan = getattr(settings, 'SHORTENER_LIFESPAN', -1)
-        max_uses = getattr(settings, 'SHORTENER_MAX_USES', -1)
+        if isinstance(e, UrlProfile.DoesNotExist) or (isinstance(e, TypeError) and getattr(settings, 'ALLOW_ANONYMOUS_USER', False):
+            enabled = getattr(settings, 'SHORTENER_ENABLED', True)
+            max_urls = getattr(settings, 'SHORTENER_MAX_URLS', -1)
+            max_concurrent = getattr(settings, 'SHORTENER_MAX_CONCURRENT', -1)
+            lifespan = getattr(settings, 'SHORTENER_LIFESPAN', -1)
+            max_uses = getattr(settings, 'SHORTENER_MAX_USES', -1)
+        else raise TypeError('Anonymous User is not allowed - check settings')
 
     # Ensure User is allowed to create
     if not enabled:
