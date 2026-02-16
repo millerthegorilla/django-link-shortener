@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 # Create your models here.
 class UrlMap(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     full_url = models.TextField()
     short_url = models.CharField(max_length=50, unique=True, db_index=True)
     usage_count = models.IntegerField(default=0)
