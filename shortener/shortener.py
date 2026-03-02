@@ -41,13 +41,16 @@ def create(user, link):
 
     except (UrlProfile.DoesNotExist, TypeError) as e:
         # Use defaults from settings
-        if ((isinstance(e, UrlProfile.DoesNotExist) and user is None) 
+        if (isinstance(e, UrlProfile.DoesNotExist) 
             or (isinstance(e, TypeError) and getattr(settings, 'ALLOW_ANONYMOUS_USER', False))):
             enabled = getattr(settings, 'SHORTENER_ENABLED', True)
             max_urls = getattr(settings, 'SHORTENER_MAX_URLS', -1)
             max_concurrent = getattr(settings, 'SHORTENER_MAX_CONCURRENT', -1)
             lifespan = getattr(settings, 'SHORTENER_LIFESPAN', -1)
             max_uses = getattr(settings, 'SHORTENER_MAX_USES', -1)
+            if isinstance(e, UrlProfile.DoesNotExist):
+                p = UrlProfile(user=user)
+                p.save()
         else:
             raise TypeError('Anonymous User is not allowed - check settings')
 
